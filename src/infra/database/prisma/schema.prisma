@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -6,4 +5,44 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Account {
+  id               String    @id
+  username         String
+  email            String    @unique
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+  hasEmailVerified Boolean   @default(false) @map("has_email_verified")
+  lastLoggedInDate DateTime? @map("last_logged_in_date")
+
+  ownedApplications Application[]
+
+  @@map("accounts")
+}
+
+model Application {
+  id           String   @id
+  name         String // must unique under one account
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  description  String?
+  routeName    String   @unique @map("route_name") // application's route name to access and must unique across the whole app
+  ownerId      String   @map("owner_id")
+  ownerAccount Account  @relation(fields: [ownerId], references: [id])
+
+  @@map("applications")
+}
+
+// key store for access application
+model ApplicationKey {
+  id          String   @id
+  name        String?
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  credential  String
+  isDisable   Boolean  @default(false) @map("is_disable")
+
+  @@map("application_keys")
 }
