@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Account {
-  id               String    @id
+  id               String    @id @default(cuid())
   username         String
   email            String    @unique
   createdAt        DateTime  @default(now()) @map("created_at")
@@ -22,7 +22,7 @@ model Account {
 }
 
 model Application {
-  id           String   @id
+  id           String   @id @default(cuid())
   name         String // must unique under one account
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
@@ -36,7 +36,7 @@ model Application {
 
 // key store for access application
 model ApplicationKey {
-  id          String   @id
+  id          String   @id @default(cuid())
   name        String?
   description String?
   createdAt   DateTime @default(now()) @map("created_at")

@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
+import PrismaModule from './database/prisma.module';
 
-@Module({})
+@Global()
+@Module({
+  imports: [PrismaModule],
+  exports: [PrismaModule],
+})
 export default class InfraModule {}
