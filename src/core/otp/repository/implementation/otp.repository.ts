@@ -11,6 +11,10 @@ export default class OTPRepository implements IOTPRepository {
 
   async save(param: SaveOTPParam): Promise<OTP> {
     try {
+      this.logger.log(
+        'Started executing OTPRepository->save() with param ',
+        JSON.stringify(param, null, 2),
+      );
       const result = await this.prismaService.oTP.create({
         data: {
           code: param.code,
@@ -54,7 +58,7 @@ export default class OTPRepository implements IOTPRepository {
 
   async claimOTPById(id: number): Promise<void> {
     try {
-      await this.prismaService.oTP.update({
+      const transaction = this.prismaService.oTP.update({
         where: {
           id,
         },
@@ -62,6 +66,7 @@ export default class OTPRepository implements IOTPRepository {
           hasClaimed: true,
         },
       });
+      await this.prismaService.$transaction([transaction]);
     } catch (e) {
       this.logger.error('Failed executing OTPRepository->claimOTPById() ', e);
       throw e;

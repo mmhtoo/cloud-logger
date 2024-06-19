@@ -8,7 +8,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import AccountService from '../service/account.service';
-import { SignUpDto } from '../dto';
+import { SignUpDto, SignUpVerifyDto } from '../dto';
 import { ResponseInterceptor } from 'src/shared/interceptor';
 
 @Controller({
@@ -30,13 +30,43 @@ export default class AccountController {
       await this.accountService.signUpUser(dto);
       return;
     } catch (e) {
-      this.logger.log('Failed executing AccountController->signUpAccount() ');
+      this.logger.error('Failed executing AccountController->signUpAccount() ');
       if (e instanceof HttpException) {
         throw e;
       }
       throw new InternalServerErrorException('Unknown Error!');
     } finally {
       this.logger.log('Finished executing AccountController->signUpAccount() ');
+    }
+  }
+
+  /*
+   * for account verification
+   */
+  @Post('/verify-sign-up')
+  @UseInterceptors(
+    new ResponseInterceptor({
+      message: 'Successfully Verified!',
+    }),
+  )
+  async verifyAccountSignUp(@Body() dto: SignUpVerifyDto) {
+    try {
+      this.logger.log(
+        'Started executing AcccountController->verifyAccountSignUp()',
+      );
+      await this.accountService.verifySignUpAccount(dto);
+    } catch (e) {
+      this.logger.error(
+        'Failed executing AccountController->verifyAccountSignUp() ',
+      );
+      if (e instanceof HttpException) {
+        throw e;
+      }
+      throw new InternalServerErrorException('Unknown Error!');
+    } finally {
+      this.logger.log(
+        'Finished executing AccountController->verifyAccountSignUp()',
+      );
     }
   }
 }

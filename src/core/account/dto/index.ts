@@ -11,3 +11,11 @@ export class SignUpDto {
   @MaxLength(30)
   username: string;
 }
+
+export class SignUpVerifyDto {
+  @IsNotEmpty()
+  accountId: string;
+
+  @IsNotEmpty()
+  code: string;
+}

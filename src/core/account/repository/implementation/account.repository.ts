@@ -92,4 +92,27 @@ export default class AccountRepository implements IAccountRepository {
       this.logger.log('Finished executing AccountRepository->countByEmail() ');
     }
   }
+
+  async verifyAccount(accountId: string): Promise<void> {
+    try {
+      const transaction = this.prismaService.account.update({
+        where: {
+          id: accountId,
+          hasEmailVerified: false,
+        },
+        data: {
+          hasEmailVerified: true,
+        },
+      });
+      await this.prismaService.$transaction([transaction]);
+    } catch (e) {
+      this.logger.error(
+        'Failed executing AccountRepository->verifyAccount() ',
+        e,
+      );
+      throw e;
+    } finally {
+      this.logger.log('Finished executing AccountRepository->verifyAccount() ');
+    }
+  }
 }

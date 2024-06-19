@@ -10,7 +10,7 @@ export default class GlobalExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus ? exception.getStatus() : 500;
 
     if (exception instanceof ValidationException) {
-      response.status(400).json({
+      return response.status(400).json({
         status: 400,
         timestamp: new Date().toISOString(),
         error: exception.getResponse(),

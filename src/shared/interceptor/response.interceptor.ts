@@ -14,19 +14,22 @@ type Response<T> = {
   data?: T;
 };
 
+type ResponseMetaData = {
+  responseType?: 'data' | 'info';
+  status?: number;
+  message?: string;
+};
+
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<T, Response<T>> {
-  constructor(
-    private readonly param: {
-      responseType: 'data' | 'info';
-      status: number;
-      message: string;
-    } = {
+  constructor(private readonly param?: ResponseMetaData) {
+    const defaultParam: ResponseMetaData = {
       responseType: 'info',
       status: HttpStatus.OK,
       message: 'Success!',
-    },
-  ) {}
+    };
+    this.param = param ? { ...defaultParam, ...param } : defaultParam;
+  }
 
   intercept(
     _context: ExecutionContext,
