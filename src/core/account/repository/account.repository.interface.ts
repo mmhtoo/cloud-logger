@@ -10,4 +10,5 @@ export default abstract class IAccountRepository {
   abstract findByEmail(email: string): Promise<Account>;
   abstract countByEmail(email: string): Promise<number>;
   abstract verifyAccount(accountId: string): Promise<void>;
+  abstract findById(id: string): Promise<Account | null>;
 }

@@ -1,15 +1,19 @@
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   InternalServerErrorException,
   Logger,
   Post,
+  Request,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { SignInDto } from '../dto';
 import AuthService from '../service/auth.service';
 import { ResponseInterceptor } from 'src/shared/interceptor';
+import JwtGuard from '../guard/jwt.guard';
 
 @Controller({
   version: '1',
@@ -44,6 +48,25 @@ export default class AuthController {
       throw new InternalServerErrorException('Unknown Error!');
     } finally {
       this.logger.log('Finished executing AuthController->signIn() ');
+    }
+  }
+
+  @Get('whoami')
+  @UseGuards(JwtGuard)
+  @UseInterceptors(
+    new ResponseInterceptor({
+      responseType: 'data',
+    }),
+  )
+  whoAmI(@Request() req: any) {
+    try {
+      this.logger.log('Started executing AuthController->whoAmI() ');
+      return this.authService.getProfileData(req.user ? req.user.uid : '');
+    } catch (e) {
+      this.logger.error('Failed executing AuthController->whoAmI() ', e);
+      throw e;
+    } finally {
+      this.logger.log('Finished executing AuthController->whoAmI() ');
     }
   }
 }

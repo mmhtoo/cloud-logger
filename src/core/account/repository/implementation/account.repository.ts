@@ -115,4 +115,24 @@ export default class AccountRepository implements IAccountRepository {
       this.logger.log('Finished executing AccountRepository->verifyAccount() ');
     }
   }
+
+  async findById(accountId: string): Promise<Account | null> {
+    try {
+      this.logger.log(
+        'Started executing AccountRepository->findById() with param ',
+        accountId,
+      );
+      const savedAccount = await this.prismaService.account.findUnique({
+        where: {
+          id: accountId,
+        },
+      });
+      return savedAccount;
+    } catch (e) {
+      this.logger.error('Failed executing AccountRepository->findById() ', e);
+      throw e;
+    } finally {
+      this.logger.log('Finished executing AccountRepository->findById() ');
+    }
+  }
 }

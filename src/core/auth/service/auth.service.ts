@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Account } from '@prisma/client';
 import IAccountRepository from 'src/core/account/repository/account.repository.interface';
 
 class InvalidSignInException extends BadRequestException {
@@ -47,6 +48,20 @@ export default class AuthService {
       throw e;
     } finally {
       this.logger.log('Finished executing AuthService->signInAccount() ');
+    }
+  }
+
+  // get profile data
+  async getProfileData(accountId: string): Promise<Account | null> {
+    try {
+      this.logger.log('Started executing AuthService->getProfileData() ');
+      const result = await this.accountRepository.findById(accountId);
+      return result;
+    } catch (e) {
+      this.logger.error('Failed executing AuthService->getProfileData() ', e);
+      throw e;
+    } finally {
+      this.logger.log('Finished executing AuthService->getProfileData() ');
     }
   }
 }
