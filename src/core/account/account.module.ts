@@ -17,5 +17,6 @@ import OTPModule from '../otp/otp.module';
     AccountService,
     AccountEventListener,
   ],
+  exports: [IAccountRepository],
 })
 export default class AccountModule {}

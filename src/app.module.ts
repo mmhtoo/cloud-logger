@@ -4,6 +4,7 @@ import InfraModule from './infra/infra.module';
 import AccountModule from './core/account/account.module';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import AuthModule from './core/auth/auth.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       isGlobal: true,
     }),
     AccountModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

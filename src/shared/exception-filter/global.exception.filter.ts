@@ -20,7 +20,7 @@ export default class GlobalExceptionFilter implements ExceptionFilter {
     response.status(status).json({
       status,
       timestamp: new Date().toISOString(),
-      error: exception.getResponse()
+      error: exception.getResponse
         ? exception.getResponse().message || CODE.UNKNOWN_ERROR
         : CODE.UNKNOWN_ERROR,
     });
