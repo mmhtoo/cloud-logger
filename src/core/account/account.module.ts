@@ -3,8 +3,11 @@ import AccountRepository from './repository/implementation/account.repository';
 import AccountController from './controller/account.controller';
 import AccountService from './service/account.service';
 import IAccountRepository from './repository/account.repository.interface';
+import AccountEventListener from './event-listener/account.event.listener';
+import OTPModule from '../otp/otp.module';
 
 @Module({
+  imports: [OTPModule],
   controllers: [AccountController],
   providers: [
     {
@@ -12,6 +15,7 @@ import IAccountRepository from './repository/account.repository.interface';
       useClass: AccountRepository,
     },
     AccountService,
+    AccountEventListener,
   ],
 })
 export default class AccountModule {}

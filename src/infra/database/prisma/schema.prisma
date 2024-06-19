@@ -17,6 +17,7 @@ model Account {
   lastLoggedInDate DateTime? @map("last_logged_in_date")
 
   ownedApplications Application[]
+  issuedOTPs        OTP[]
 
   @@map("accounts")
 }
@@ -45,4 +46,24 @@ model ApplicationKey {
   isDisable   Boolean  @default(false) @map("is_disable")
 
   @@map("application_keys")
+}
+
+enum OTPPurpose {
+  ACCOUNT_VERIFY
+}
+
+// OTP for various actions
+model OTP {
+  id         Int        @id @default(autoincrement())
+  code       String
+  purpose    OTPPurpose
+  hasClaimed Boolean    @default(false) @map("has_claimed")
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+  expiredAt  DateTime   @map("expired_at")
+
+  accountId String  @map("account_id")
+  account   Account @relation(fields: [accountId], references: [id])
+
+  @@map("otps")
 }

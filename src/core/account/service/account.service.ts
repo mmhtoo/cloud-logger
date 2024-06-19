@@ -1,6 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import IAccountRepository from '../repository/account.repository.interface';
 import { CODE } from 'src/shared/constant';
+import dayjs from 'dayjs';
+import { OTPPurpose } from '@prisma/client';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ACCOUNT_EVENTS } from '../event-listener/account.event.listener';
 
 type SignUpUserParam = {
   username: string;
@@ -11,16 +15,22 @@ type SignUpUserParam = {
 export default class AccountService {
   private readonly logger = new Logger(AccountService.name);
 
-  constructor(private readonly accountRepository: IAccountRepository) {}
+  constructor(
+    private readonly accountRepository: IAccountRepository,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   async signUpUser(param: SignUpUserParam) {
     try {
-      // save to database
-      await this.accountRepository.save(param);
-      // send verification email
-
-      // return success
-      return CODE.SUCCESS;
+      // save user to database
+      const savedAccount = await this.accountRepository.save(param);
+      // emit event to send vefication email
+      this.eventEmitter.emit(ACCOUNT_EVENTS.ON_SIGN_UP, {
+        accountId: savedAccount.id,
+        email: param.email,
+        username: param.username,
+      });
+      return savedAccount;
     } catch (e) {
       this.logger.error('Failed executing AccountService->signUpUser() ', e);
       throw e;
