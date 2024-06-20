@@ -1,16 +1,18 @@
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   InternalServerErrorException,
   Logger,
   Post,
+  Query,
   Request,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import ApplicationService from '../service/application.service';
-import { CreateAppDto } from '../dto';
+import { CreateAppDto, GetApplicationsDto } from '../dto';
 import JwtGuard from 'src/core/auth/guard/jwt.guard';
 import { ResponseInterceptor } from 'src/shared/interceptor';
 
@@ -23,6 +25,7 @@ export default class ApplicationController {
 
   constructor(private readonly applicationService: ApplicationService) {}
 
+  // for creating new application
   @Post()
   @UseGuards(JwtGuard)
   @UseInterceptors(
@@ -49,6 +52,34 @@ export default class ApplicationController {
       throw new InternalServerErrorException('Unknown Error!');
     } finally {
       this.logger.log('Finished executing createApplication()');
+    }
+  }
+
+  // for getting user's appilcations
+  @Get()
+  @UseGuards(JwtGuard)
+  @UseInterceptors(
+    new ResponseInterceptor({
+      responseType: 'data',
+    }),
+  )
+  async getApplications(
+    @Request() req: any,
+    @Query() queryData: GetApplicationsDto,
+  ) {
+    try {
+      this.logger.log('Started executing getApplications() ');
+      const result = await this.applicationService.getApplicationsByOwnerId({
+        ownerId: req.user ? req.user.uid : '',
+        page: queryData.page,
+        size: queryData.size,
+      });
+      return result;
+    } catch (e) {
+      this.logger.error('Failed executing getApplications() ', e);
+      throw e;
+    } finally {
+      this.logger.log('Finished executing getApplicatons() ');
     }
   }
 }

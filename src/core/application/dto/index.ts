@@ -1,4 +1,9 @@
-import { IsNotEmpty, IsOptional, MaxLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumberString,
+  IsOptional,
+  MaxLength,
+} from 'class-validator';
 
 export class CreateAppDto {
   @IsNotEmpty()
@@ -12,4 +17,14 @@ export class CreateAppDto {
   @IsOptional()
   @MaxLength(200)
   routeName?: string;
+}
+
+export class GetApplicationsDto {
+  @IsNumberString()
+  @IsOptional()
+  page: number = 1;
+
+  @IsNumberString()
+  @IsOptional()
+  size: number = 10;
 }

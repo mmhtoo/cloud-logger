@@ -7,6 +7,14 @@ export type SaveParam = {
   ownerId: string;
 };
 
+export type FindByOwnerIdParam = {
+  ownerId: string;
+  page: number;
+  size: number;
+};
+
 export default abstract class IApplicationRepository {
   abstract save(param: SaveParam): Promise<Application>;
+  abstract findByOwnerId(param: FindByOwnerIdParam): Promise<Application[]>;
+  abstract countByOwnerId(ownerId: string): Promise<number>;
 }

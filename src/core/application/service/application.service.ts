@@ -3,6 +3,8 @@ import IApplicationRepository from '../repository/application.repository.interfa
 import IApplicationKeyRepository from '../repository/application-key.repository.interface';
 import { Application, ApplicationKey } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
+import { PaginationResult } from 'src/shared/dto';
+import { mapToPaginationData } from 'src/shared/mapper';
 
 type CreateApplicationParam = {
   name: string;
@@ -30,6 +32,12 @@ type CreateApplicationResult = {
     createdAt: Date;
     credential: string;
   };
+};
+
+type GetApplicationsParam = {
+  ownerId: string;
+  page: number;
+  size: number;
 };
 
 @Injectable()
@@ -122,6 +130,34 @@ export default class ApplicationService {
       throw e;
     } finally {
       this.logger.log('Finished executing createApplicationKey() ');
+    }
+  }
+
+  // for getting appliction list by ownerId
+  async getApplicationsByOwnerId(
+    param: GetApplicationsParam,
+  ): Promise<PaginationResult<Application>> {
+    try {
+      this.logger.log('Started executing getApplicationsByOwnerId() ');
+      const { page, size, ownerId } = param;
+      const totalData =
+        await this.applicationRepository.countByOwnerId(ownerId);
+      const contents = await this.applicationRepository.findByOwnerId({
+        ownerId: ownerId,
+        page: page,
+        size: size,
+      });
+      return mapToPaginationData({
+        contents,
+        totalData,
+        page,
+        size,
+      });
+    } catch (e) {
+      this.logger.error('Failed executing getApplicationsByOwnerId() ', e);
+      throw e;
+    } finally {
+      this.logger.log('Finished executing getApplicationsByOwnerId() ');
     }
   }
 }
