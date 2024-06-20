@@ -5,6 +5,7 @@ import {
   HttpException,
   InternalServerErrorException,
   Logger,
+  Param,
   Post,
   Query,
   Request,
@@ -12,7 +13,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import ApplicationService from '../service/application.service';
-import { CreateAppDto, GetApplicationsDto } from '../dto';
+import { CreateAppDto, CreateAppKeyDto, GetApplicationsDto } from '../dto';
 import JwtGuard from 'src/core/auth/guard/jwt.guard';
 import { ResponseInterceptor } from 'src/shared/interceptor';
 
@@ -80,6 +81,66 @@ export default class ApplicationController {
       throw e;
     } finally {
       this.logger.log('Finished executing getApplicatons() ');
+    }
+  }
+
+  // for issuing new application key
+  @Post('/:appId/keys')
+  @UseGuards(JwtGuard)
+  @UseInterceptors(
+    new ResponseInterceptor({
+      responseType: 'data',
+    }),
+  )
+  async createNewApplicationKey(
+    @Body() dto: CreateAppKeyDto,
+    @Param('appId') appId: string,
+    @Request() req,
+  ) {
+    try {
+      this.logger.log(
+        'Started executing createNewApplicationKey() with param ',
+        JSON.stringify(dto, null, 2),
+      );
+      const result = await this.applicationService.createApplicationKey({
+        name: dto.name,
+        description: dto.description,
+        applicationId: appId,
+        ownerId: req.user ? req.user.uid : '',
+      });
+      return result;
+    } catch (e) {
+      this.logger.error('Failed executing createNewApplicationKey() ', e);
+      throw e;
+    } finally {
+      this.logger.log('Finished executing createNewApplicationKey() ');
+    }
+  }
+
+  // for getting application keys by app id
+  @Get('/:appId/keys')
+  @UseGuards(JwtGuard)
+  @UseInterceptors(
+    new ResponseInterceptor({
+      responseType: 'data',
+    }),
+  )
+  async getApplicationKeys(@Param('appId') appId: string, @Request() req) {
+    try {
+      this.logger.log(
+        'Started executing getApplicationKeys() with param ',
+        appId,
+      );
+      const result = await this.applicationService.getApplicationKeysByAppId({
+        appId,
+        ownerId: req.user ? req.user.uid : '',
+      });
+      return result;
+    } catch (e) {
+      this.logger.error('Failed executing getApplicationKeys() ', e);
+      throw e;
+    } finally {
+      this.logger.log('Finished executing getApplicationKeys() ');
     }
   }
 }

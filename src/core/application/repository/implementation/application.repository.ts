@@ -71,4 +71,21 @@ export default class ApplicationRepository implements IApplicationRepository {
       this.logger.log('Finished executing countByOwnerId() ');
     }
   }
+
+  async findById(id: string): Promise<Application | null> {
+    try {
+      this.logger.log('Started executing findById() ');
+      const result = await this.prismaService.application.findUnique({
+        where: {
+          id,
+        },
+      });
+      return result;
+    } catch (e) {
+      this.logger.error('Failed executing findById() ', e);
+      throw e;
+    } finally {
+      this.logger.log('Finished executing findById() ');
+    }
+  }
 }

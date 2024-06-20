@@ -28,3 +28,13 @@ export class GetApplicationsDto {
   @IsOptional()
   size: number = 10;
 }
+
+export class CreateAppKeyDto {
+  @IsNotEmpty()
+  @MaxLength(50)
+  name: string;
+
+  @IsOptional()
+  @MaxLength(300)
+  description?: string;
+}
