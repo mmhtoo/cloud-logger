@@ -5,6 +5,7 @@ import AccountModule from './core/account/account.module';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import AuthModule from './core/auth/auth.module';
+import ApplicationModule from './core/application/application.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import AuthModule from './core/auth/auth.module';
     }),
     AccountModule,
     AuthModule,
+    ApplicationModule,
   ],
   controllers: [],
   providers: [],
