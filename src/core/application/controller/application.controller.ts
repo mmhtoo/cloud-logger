@@ -14,7 +14,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import ApplicationService from '../service/application.service';
-import { CreateAppDto, CreateAppKeyDto, GetApplicationsDto } from '../dto';
+import {
+  CreateAppDto,
+  CreateAppKeyDto,
+  GetApplicationsDto,
+  SaveLogDto,
+} from '../dto';
 import JwtGuard from 'src/core/auth/guard/jwt.guard';
 import { ResponseInterceptor } from 'src/shared/interceptor';
 
@@ -170,6 +175,27 @@ export default class ApplicationController {
       throw e;
     } finally {
       this.logger.log('Finished executing disableApplicationKey() ');
+    }
+  }
+
+  // for saving logs
+  @Post('/:appId/logs')
+  @UseInterceptors(
+    new ResponseInterceptor({
+      responseType: 'info',
+    }),
+  )
+  async saveLogToApplication(@Body() dto: SaveLogDto) {
+    try {
+      this.logger.log(
+        'Started executing saveLogToApplication() with param ',
+        JSON.stringify(dto, null, 2),
+      );
+    } catch (e) {
+      this.logger.error('Failed executing saveLogToApplication() ', e);
+      throw e;
+    } finally {
+      this.logger.log('Finished executing saveLogToApplication() ');
     }
   }
 }

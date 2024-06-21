@@ -8,6 +8,8 @@ import IApplicationKeyRepository from './repository/application-key.repository.i
 import ApplicationKeyRepository from './repository/implementation/application-key.repository';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import IApplicationLogRepository from './repository/application-log.repository.interface';
+import ApplicationLogRepository from './repository/implementation/application-log.repository';
 
 @Module({
   imports: [
@@ -33,6 +35,10 @@ import { ConfigService } from '@nestjs/config';
     {
       provide: IApplicationKeyRepository,
       useClass: ApplicationKeyRepository,
+    },
+    {
+      provide: IApplicationLogRepository,
+      useClass: ApplicationLogRepository,
     },
   ],
 })

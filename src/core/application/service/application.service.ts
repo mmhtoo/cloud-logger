@@ -1,7 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import IApplicationRepository from '../repository/application.repository.interface';
 import IApplicationKeyRepository from '../repository/application-key.repository.interface';
-import { Application, ApplicationKey } from '@prisma/client';
+import {
+  Application,
+  ApplicationKey,
+  ApplicationLog,
+  LogType,
+} from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
 import { PaginationResult } from 'src/shared/dto';
 import { mapToPaginationData } from 'src/shared/mapper';
@@ -55,6 +60,13 @@ type DisableApplicationKeyParam = {
   appId: string;
   keyId: string;
   ownerId: string;
+};
+
+type SaveApplicationLogParam = {
+  logType: LogType;
+  message: string;
+  detailContent: string;
+  metadata: string;
 };
 
 @Injectable()
@@ -221,6 +233,24 @@ export default class ApplicationService {
       throw e;
     } finally {
       this.logger.log('Finished executing disableApplicationKey() ');
+    }
+  }
+
+  // for saving application log
+  async saveApplicationLog(
+    param: SaveApplicationLogParam,
+  ): Promise<ApplicationLog> {
+    try {
+      this.logger.log(
+        'Started executing saveApplicationLog() with param ',
+        JSON.stringify(param, null, 2),
+      );
+      return;
+    } catch (e) {
+      this.logger.error('Failed executing saveApplicationLog() ', e);
+      throw e;
+    } finally {
+      this.logger.log('Finished executing saveApplicationLog() ');
     }
   }
 }

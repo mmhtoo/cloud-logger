@@ -1,3 +1,4 @@
+import { LogType } from '@prisma/client';
 import {
   IsNotEmpty,
   IsNumberString,
@@ -37,4 +38,18 @@ export class CreateAppKeyDto {
   @IsOptional()
   @MaxLength(300)
   description?: string;
+}
+
+export class SaveLogDto {
+  logType: LogType = LogType.INFO;
+
+  @IsNotEmpty()
+  @MaxLength(200)
+  message: string;
+
+  @MaxLength(500)
+  detailContent: string;
+
+  @MaxLength(1000)
+  metadata: string;
 }
