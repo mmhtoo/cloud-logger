@@ -6,6 +6,7 @@ import {
   InternalServerErrorException,
   Logger,
   Param,
+  Patch,
   Post,
   Query,
   Request,
@@ -141,6 +142,34 @@ export default class ApplicationController {
       throw e;
     } finally {
       this.logger.log('Finished executing getApplicationKeys() ');
+    }
+  }
+
+  // for disabling application key
+  @Patch('/:appId/keys/:keyId/disable')
+  @UseGuards(JwtGuard)
+  @UseInterceptors(
+    new ResponseInterceptor({
+      responseType: 'info',
+    }),
+  )
+  async disableApplicationKey(
+    @Param('appId') appId: string,
+    @Param('keyId') keyId: string,
+    @Request() req,
+  ) {
+    try {
+      this.logger.log('Started executing disableApplicatioKey() ');
+      return await this.applicationService.disableApplicationKey({
+        appId,
+        keyId,
+        ownerId: req.user ? req.user.uid : '',
+      });
+    } catch (e) {
+      this.logger.error('Failed executing disableApplicationKey() ', e);
+      throw e;
+    } finally {
+      this.logger.log('Finished executing disableApplicationKey() ');
     }
   }
 }

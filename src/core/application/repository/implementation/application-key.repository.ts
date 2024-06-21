@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import IApplicationKeyRepository, {
+  DisableKeyById,
   FindByAppIdParam,
   SaveParam,
 } from '../application-key.repository.interface';
@@ -56,6 +57,33 @@ export default class ApplicationKeyRepository
       throw e;
     } finally {
       this.logger.log('Finished executing findByAppId() ');
+    }
+  }
+
+  async disableKeyById(param: DisableKeyById): Promise<void> {
+    try {
+      this.logger.log(
+        'Started executing disableKeyById() with param ',
+        JSON.stringify(param, null, 2),
+      );
+      await this.prismaService.applicationKey.update({
+        where: {
+          applicationId: param.appId,
+          id: param.keyId,
+          application: {
+            ownerId: param.ownerId,
+          },
+        },
+        data: {
+          isDisable: true,
+        },
+      });
+      return;
+    } catch (e) {
+      this.logger.error('Failed executing disableKeyById() ', e);
+      throw e;
+    } finally {
+      this.logger.log('Finished executing disableKeyById() ');
     }
   }
 }

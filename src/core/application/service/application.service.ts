@@ -51,6 +51,12 @@ type GetApplicationKeysByAppIdParam = {
   ownerId: string;
 };
 
+type DisableApplicationKeyParam = {
+  appId: string;
+  keyId: string;
+  ownerId: string;
+};
+
 @Injectable()
 export default class ApplicationService {
   private readonly logger = new Logger(ApplicationService.name);
@@ -199,6 +205,22 @@ export default class ApplicationService {
       throw e;
     } finally {
       this.logger.log('Finished executing getApplicationKeysByAppId() ');
+    }
+  }
+
+  // for disabling application key
+  async disableApplicationKey(param: DisableApplicationKeyParam) {
+    try {
+      this.logger.log(
+        'Started executing disableApplicationKey() with param ',
+        JSON.stringify(param, null, 2),
+      );
+      return await this.applicationKeyRepository.disableKeyById(param);
+    } catch (e) {
+      this.logger.error('Failed executing disableApplicationKey() ');
+      throw e;
+    } finally {
+      this.logger.log('Finished executing disableApplicationKey() ');
     }
   }
 }
