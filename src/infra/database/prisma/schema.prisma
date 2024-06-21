@@ -33,6 +33,8 @@ model Application {
   ownerAccount    Account          @relation(fields: [ownerId], references: [id])
   applicationKeys ApplicationKey[]
 
+  applicationLogs ApplicationLog[]
+
   @@map("applications")
 }
 
@@ -48,6 +50,8 @@ model ApplicationKey {
 
   applicationId String      @map("application_id")
   application   Application @relation(fields: [applicationId], references: [id])
+
+  appliationLogs ApplicationLog[]
 
   @@map("application_keys")
 }
@@ -70,4 +74,29 @@ model OTP {
   account   Account @relation(fields: [accountId], references: [id])
 
   @@map("otps")
+}
+
+
+enum LogType {
+  INFO
+  WARNING
+  ERROR
+}
+
+model ApplicationLog {
+  id String @id @default(cuid())
+  logType LogType @map("log_type") 
+  message String
+  detailContent String? @map("detail_content")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  applicationId String @map("application_id")
+  application Application @relation(fields: [applicationId], references: [id])
+
+  requestedKeyId String @map("requested_key_id")
+  requestedKey ApplicationKey @relation(fields: [requestedKeyId] , references: [id])
+
+  metadata Json? @map("meta_data")
+  @@map("application_logs")
 }
