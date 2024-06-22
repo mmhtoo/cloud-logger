@@ -24,7 +24,6 @@ import {
 import JwtGuard from 'src/core/auth/guard/jwt.guard';
 import { ResponseInterceptor } from 'src/shared/interceptor';
 import ApplicationKeyGuard, {
-  APP_KEY_DATA,
   APP_KEY_TOKEN,
 } from '../guard/application-key.guard';
 
