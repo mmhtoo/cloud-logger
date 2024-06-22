@@ -48,8 +48,11 @@ export class SaveLogDto {
   message: string;
 
   @MaxLength(500)
-  detailContent: string;
+  detailContent?: string = '';
 
   @MaxLength(1000)
-  metadata: string;
+  metadata?: string = '';
+
+  @IsNotEmpty()
+  credentialId: string;
 }

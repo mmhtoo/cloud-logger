@@ -15,6 +15,7 @@ import {
   InvalidApplicationException,
   UnAuthorizedKeyActionException,
 } from '../exception';
+import IApplicationLogRepository from '../repository/application-log.repository.interface';
 
 type CreateApplicationParam = {
   name: string;
@@ -67,6 +68,9 @@ type SaveApplicationLogParam = {
   message: string;
   detailContent: string;
   metadata: string;
+  applicationId: string;
+  credential: string;
+  credentialId: string;
 };
 
 @Injectable()
@@ -77,6 +81,7 @@ export default class ApplicationService {
     private readonly applicationRepository: IApplicationRepository,
     private readonly applicationKeyRepository: IApplicationKeyRepository,
     private readonly jwtService: JwtService,
+    private readonly applicationLogRepository: IApplicationLogRepository,
   ) {}
 
   // for create new application
@@ -245,12 +250,46 @@ export default class ApplicationService {
         'Started executing saveApplicationLog() with param ',
         JSON.stringify(param, null, 2),
       );
-      return;
+
+      // save to database
+      const result = await this.applicationLogRepository.save({
+        ...param,
+        applicationKeyId: param.credentialId,
+      });
+      return result;
     } catch (e) {
       this.logger.error('Failed executing saveApplicationLog() ', e);
       throw e;
     } finally {
       this.logger.log('Finished executing saveApplicationLog() ');
+    }
+  }
+
+  // for getting application instance by id
+  async getApplicationById(id: string): Promise<Application | null> {
+    try {
+      this.logger.log('Started executing getApplicationById()');
+      const result = await this.applicationRepository.findById(id);
+      return result;
+    } catch (e) {
+      this.logger.error('Failed executing getApplicationById() ', e);
+      throw e;
+    } finally {
+      this.logger.log('Finished executing getApplicationById() ');
+    }
+  }
+
+  // for getting application key by id
+  async getApplicationKeyById(keyId: string): Promise<ApplicationKey | null> {
+    try {
+      this.logger.log('Started executing getApplicationKeyById() ');
+      const result = await this.applicationKeyRepository.findById(keyId);
+      return result;
+    } catch (e) {
+      this.logger.error('Failed executing getApplicationKeyById()', e);
+      throw e;
+    } finally {
+      this.logger.log('Finished executing getApplicationKeyById() ');
     }
   }
 }

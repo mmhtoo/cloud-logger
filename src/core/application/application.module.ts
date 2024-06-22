@@ -10,6 +10,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import IApplicationLogRepository from './repository/application-log.repository.interface';
 import ApplicationLogRepository from './repository/implementation/application-log.repository';
+import ApplicationKeyGuard from './guard/application-key.guard';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import ApplicationLogRepository from './repository/implementation/application-lo
       provide: IApplicationLogRepository,
       useClass: ApplicationLogRepository,
     },
+    ApplicationKeyGuard,
   ],
 })
 export default class ApplicationModule {}

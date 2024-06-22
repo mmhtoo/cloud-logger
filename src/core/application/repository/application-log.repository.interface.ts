@@ -1,7 +1,14 @@
-import { ApplicationLog } from '@prisma/client';
+import { ApplicationLog, LogType } from '@prisma/client';
 
-type SaveParam = {};
+export type SaveParam = {
+  logType: LogType;
+  message: string;
+  detailContent: string;
+  applicationId: string;
+  applicationKeyId: string;
+  metadata?: string;
+};
 
 export default abstract class IApplicationLogRepository {
-  abstract save(): Promise<ApplicationLog>;
+  abstract save(param: SaveParam): Promise<ApplicationLog>;
 }

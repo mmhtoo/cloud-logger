@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
   HttpException,
   InternalServerErrorException,
   Logger,
@@ -22,6 +23,10 @@ import {
 } from '../dto';
 import JwtGuard from 'src/core/auth/guard/jwt.guard';
 import { ResponseInterceptor } from 'src/shared/interceptor';
+import ApplicationKeyGuard, {
+  APP_KEY_DATA,
+  APP_KEY_TOKEN,
+} from '../guard/application-key.guard';
 
 @Controller({
   version: '1',
@@ -185,12 +190,27 @@ export default class ApplicationController {
       responseType: 'info',
     }),
   )
-  async saveLogToApplication(@Body() dto: SaveLogDto) {
+  @UseGuards(ApplicationKeyGuard)
+  async saveLogToApplication(
+    @Body() dto: SaveLogDto,
+    @Param('appId') appId: string,
+    @Headers(APP_KEY_TOKEN) appKeyToken: string,
+  ) {
     try {
       this.logger.log(
         'Started executing saveLogToApplication() with param ',
         JSON.stringify(dto, null, 2),
       );
+      const savedResult = await this.applicationService.saveApplicationLog({
+        applicationId: appId,
+        credential: appKeyToken || '',
+        detailContent: dto.detailContent,
+        message: dto.message,
+        metadata: dto.metadata,
+        logType: dto.logType,
+        credentialId: dto.credentialId,
+      });
+      return savedResult;
     } catch (e) {
       this.logger.error('Failed executing saveLogToApplication() ', e);
       throw e;

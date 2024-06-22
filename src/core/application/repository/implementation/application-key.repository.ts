@@ -86,4 +86,21 @@ export default class ApplicationKeyRepository
       this.logger.log('Finished executing disableKeyById() ');
     }
   }
+
+  async findById(id: string): Promise<ApplicationKey | null> {
+    try {
+      this.logger.log('Started executing findById() ');
+      const result = await this.prismaService.applicationKey.findUnique({
+        where: {
+          id,
+        },
+      });
+      return result;
+    } catch (e) {
+      this.logger.error('Failed executing findById() ', e);
+      throw e;
+    } finally {
+      this.logger.log('Finished executing findById() ');
+    }
+  }
 }
