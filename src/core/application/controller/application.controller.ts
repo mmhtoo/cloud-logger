@@ -19,6 +19,7 @@ import {
   CreateAppDto,
   CreateAppKeyDto,
   GetApplicationsDto,
+  GetLogsDto,
   SaveLogDto,
 } from '../dto';
 import JwtGuard from 'src/core/auth/guard/jwt.guard';
@@ -215,6 +216,38 @@ export default class ApplicationController {
       throw e;
     } finally {
       this.logger.log('Finished executing saveLogToApplication() ');
+    }
+  }
+
+  // for getting logs in admin dashboard
+  @Get('/:appId/logs')
+  @UseInterceptors(
+    new ResponseInterceptor({
+      responseType: 'data',
+    }),
+  )
+  @UseGuards(JwtGuard)
+  async getApplicationLogs(
+    @Param('appId') appId: string,
+    @Request() req,
+    @Query() queryData: GetLogsDto,
+  ) {
+    try {
+      const result = await this.applicationService.getApplicationLogs({
+        appId,
+        ownerId: req.user ? req.user.uid : '',
+        page: queryData.page,
+        size: queryData.size,
+      });
+      return result;
+    } catch (e) {
+      this.logger.error('Failed executing getApplicationLogs() ', e);
+      if (e instanceof HttpException) {
+        throw e;
+      }
+      throw new InternalServerErrorException('Unknown Error!');
+    } finally {
+      this.logger.log('Finished executing getAppicationLogs() ');
     }
   }
 }

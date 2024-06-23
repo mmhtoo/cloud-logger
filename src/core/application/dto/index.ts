@@ -56,3 +56,11 @@ export class SaveLogDto {
   @IsNotEmpty()
   credentialId: string;
 }
+
+export class GetLogsDto {
+  @IsNumberString()
+  page: number = 1;
+
+  @IsNumberString()
+  size: number = 10;
+}

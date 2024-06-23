@@ -73,6 +73,13 @@ type SaveApplicationLogParam = {
   credentialId: string;
 };
 
+type GetApplicationLogsParam = {
+  appId: string;
+  page: number;
+  size: number;
+  ownerId: string;
+};
+
 @Injectable()
 export default class ApplicationService {
   private readonly logger = new Logger(ApplicationService.name);
@@ -290,6 +297,37 @@ export default class ApplicationService {
       throw e;
     } finally {
       this.logger.log('Finished executing getApplicationKeyById() ');
+    }
+  }
+
+  // for getting application logs
+  async getApplicationLogs(
+    param: GetApplicationLogsParam,
+  ): Promise<PaginationResult<ApplicationLog>> {
+    try {
+      this.logger.log('Started executing getApplicationLogs() ');
+      const { appId, page, size, ownerId } = param;
+      const totalCount = await this.applicationLogRepository.countByAppId({
+        appId: param.appId,
+        ownerId: param.ownerId,
+      });
+      const contents = await this.applicationLogRepository.findByAppId({
+        appId,
+        page,
+        size,
+        ownerId,
+      });
+      return mapToPaginationData({
+        contents,
+        page,
+        size,
+        totalData: totalCount,
+      });
+    } catch (e) {
+      this.logger.error('Failed executing getApplicationLogs() ', e);
+      throw e;
+    } finally {
+      this.logger.log('Finished executing getApplicationLogs() ');
     }
   }
 }
